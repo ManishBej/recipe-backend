@@ -37,14 +37,16 @@ exports.getAllRecipes = async (req, res) => {
         }
       : {};
 
-    const totalRecipes = await Recipe.countDocuments(query);
-    
-    const recipes = await Recipe.find(query)
-      .populate('author', 'username')
-      .sort({ [sortField]: sortOrder })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();
+    // Execute queries in parallel for better performance
+    const [totalRecipes, recipes] = await Promise.all([
+      Recipe.countDocuments(query),
+      Recipe.find(query)
+        .populate('author', 'username')
+        .sort({ [sortField]: sortOrder })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean()
+    ]);
 
     const totalPages = Math.ceil(totalRecipes / limit);
 
@@ -59,8 +61,8 @@ exports.getAllRecipes = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('getAllRecipes error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
