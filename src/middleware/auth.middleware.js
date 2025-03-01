@@ -3,6 +3,11 @@ const User = require('../models/user.model');
 
 exports.auth = async (req, res, next) => {
   try {
+    // Skip auth for public routes
+    if (req.path === '/health' || req.path === '/status') {
+      return next();
+    }
+
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
@@ -19,6 +24,7 @@ exports.auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.error('Auth error:', error);
     res.status(401).json({ message: 'Invalid token' });
   }
 };

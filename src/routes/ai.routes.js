@@ -9,7 +9,10 @@ const router = express.Router();
 const aiLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute
     max: 10, // limit each IP to 10 requests per windowMs
-    message: { message: 'Too many requests, please try again later.' }
+    message: { message: 'Too many requests, please try again later.' },
+    // Add these options for proper IP handling with the updated trust proxy config
+    standardHeaders: true,
+    legacyHeaders: false
 });
 
 // Apply rate limiting to AI routes

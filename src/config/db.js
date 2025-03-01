@@ -18,10 +18,13 @@ const connectDB = async () => {
     const opts = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      bufferCommands: true, // Changed to true to allow buffering commands
-      maxPoolSize: process.env.NODE_ENV === 'production' ? 5 : 10,
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
+      bufferCommands: true,
+      maxPoolSize: 5, // Reduced for serverless
+      serverSelectionTimeoutMS: 5000, // Reduced timeout
+      socketTimeoutMS: 30000,
+      // Removed deprecated options:
+      // keepAlive: true,
+      // keepAliveInitialDelay: 300000
     };
 
     connectionPromise = mongoose.connect(process.env.MONGODB_URI, opts);
